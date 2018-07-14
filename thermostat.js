@@ -108,7 +108,7 @@ class NatureRemoThermostat {
     }
   }
 
-  setCurrentHeatingCoolingState(state, next) {
+  async setCurrentHeatingCoolingState(state, next) {
     this.log('setCurrentHeatingCoolingState', state)
     console.log('setCurrentHeatingCoolingState')
     return next()
@@ -120,13 +120,12 @@ class NatureRemoThermostat {
     return next(null, sensorValue.temperature)
   }
 
-  getTargetTemperature(next) {
+  async getTargetTemperature(next) {
     console.log('getTargetTemperature')
     this.log('getTargetTemperature')
-    this.api.getThermostat().then(thermostant => {
-      this.log(thermostat)
-      return next(null, thermostat.settings.temp)
-    })
+    const thermostant = await this.api.getThermostat()
+    this.log(thermostat)
+    return next(null, thermostat.settings.temp)
   }
 
   async setTargetTemperature(state, next) {
