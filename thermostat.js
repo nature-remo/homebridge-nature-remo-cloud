@@ -1,5 +1,7 @@
 // Boilerplate code can be found in homebridge repository.
 // https://github.com/nfarina/homebridge/blob/master/example-plugins/homebridge-samplePlatform/index.js
+// http://blog.theodo.fr/2017/08/make-siri-perfect-home-companion-devices-not-supported-apple-homekit/
+// http://swagger.nature.global/
 
 const NatureRemoAPI = require('./nature-remo-api')
 
@@ -47,7 +49,7 @@ class NatureRemoThermostat {
 
     this.thermostatService
       .setCharacteristic(Characteristic.CurrentHeatingCoolingState)
-      .on('get', this.getCurrentHeatingCoolingState)
+      .on('get', this.getCurrentHeatingCoolingState.bind(this))
       .on('set', (state, next) => {
         this.log('Yay!', state, next)
         this.setCurrentHeatingCoolingState(state, next)
