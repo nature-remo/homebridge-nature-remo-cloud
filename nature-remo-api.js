@@ -34,7 +34,7 @@ class NatureRemoAPI {
   }
 
   async getThermostat() {
-    const appliances = await getAppliances()
+    const appliances = await this.getAppliances()
     for (const appliance of appliances) {
       if (appliance.type === 'AC') {
         return appliance
