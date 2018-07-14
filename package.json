@@ -2,9 +2,10 @@
   "name": "homebridge-nature-remo-cloud",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "thermostat.js",
   "scripts": {
-    "test": "DEBUG=* homebridge -D -U ./homebridge-dir -P ."
+    "start": "DEBUG=* homebridge -D -U ./homebridge-dir -P .",
+    "test": "mocha"
   },
   "engines": {
     "node": ">=4.3.2",
@@ -19,6 +20,7 @@
     "axios": "^0.18.0"
   },
   "devDependencies": {
-    "homebridge": "^0.4.44"
+    "homebridge": "^0.4.44",
+    "mocha": "^5.2.0"
   }
 }

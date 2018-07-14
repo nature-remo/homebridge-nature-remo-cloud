@@ -1,8 +1,10 @@
-// https://github.com/nfarina/homebridge/blob/master/example-plugins/homebridge-samplePlatform/index.js
 // Boilerplate code can be found in homebridge repository.
+// https://github.com/nfarina/homebridge/blob/master/example-plugins/homebridge-samplePlatform/index.js
+//
+// Thermostat Service
+// https://github.com/KhaosT/HAP-NodeJS/blob/9eaea6df40811ccc71664a1ab0c13736e759dac7/lib/gen/HomeKitTypes.js#L3443-L3459
 
-const http = require('http')
-const axios = require('axios')
+const NatureRemoAPI = require('./nature-remo-api')
 
 let Accessory, Service, Characteristic, UUIDGen
 
@@ -33,6 +35,8 @@ class NatureRemoPlatform {
     this.log = log
     this.config = config
     this.accessories = []
+    this.accessToken = config.accessToken
+    this.natureRemoAPI = new NatureRemoAPI(this.accessToken)
 
     if (api) {
       this.api = api
@@ -159,21 +163,26 @@ class NatureRemoPlatform {
     )
   }
 
-  updateAccessoriesReachability() {
-    this.log('Update Reachability')
-    for (const accessory of this.accessories) {
-      accessory.updateReachability(false)
-    }
-  }
+  getServices() {
+    this.log(`start homebridge Server ${this.name}`)
 
-  removeAccessory() {
-    this.log('Remove Accessory')
-    this.api.unregisterPlatformAccessories(
-      'homebridge-nature-remo-cloud',
-      'Nature Remo',
-      this.accessories
-    )
+    this.informationService
+      .setCharacteristic(Characteristic.Manufacturer, 'Nature')
+      .setCharacteristic(Characteristic.Model, 'Remo')
+      .setCharacteristic(Characteristic.SerialNumber, '031-45-154')
 
-    this.accessories = []
+    this.humiditySensorService
+      .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+      .on('get', this.getHumidity.bind(this))
+
+    this.temperatureSensorService
+      .getCharacteristic(Characteristic.CurrentTemperature)
+      .on('get', this.getTemperature.bind(this))
+
+    return [
+      this.informationService,
+      this.humiditySensorService,
+      this.temperatureSensorService,
+    ]
   }
 }
