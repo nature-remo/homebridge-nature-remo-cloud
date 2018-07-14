@@ -5,7 +5,8 @@
 
 const NatureRemoAPI = require('./nature-remo-api')
 
-let Service, Characteristic
+let Service = null
+let Characteristic = null
 
 // Register Nature Remo service to homebridge
 module.exports = homebridge => {
@@ -33,45 +34,32 @@ class NatureRemoThermostat {
     this.accessToken = config.accessToken
     this.api = new NatureRemoAPI(this.accessToken)
 
-    // services
-    this.informationService = new Service.AccessoryInformation()
-    this.thermostatService = new Service.Thermostat()
-  }
-
-  getServices() {
     // Thermostat Service
     // https://github.com/KhaosT/HAP-NodeJS/blob/9eaea6df40811ccc71664a1ab0c13736e759dac7/lib/gen/HomeKitTypes.js#L3443-L3459
-
-    this.informationService
-      .setCharacteristic(Characteristic.Manufacturer, 'Nature')
-      .setCharacteristic(Characteristic.Model, 'Remo')
-      .setCharacteristic(Characteristic.SerialNumber, '031-45-154')
-
+    this.thermostatService = new Service.Thermostat()
     this.thermostatService
       .setCharacteristic(Characteristic.CurrentHeatingCoolingState)
-      .on('get', this.getCurrentHeatingCoolingState.bind(this))
-      .on('set', (state, next) => {
-        this.log('Yay!', state, next)
-        this.setCurrentHeatingCoolingState(state, next)
-      })
+      .on('get', this._getCurrentHeatingCoolingState.bind(this))
+      .on('set', this._setCurrentHeatingCoolingState.bind(this))
 
     this.thermostatService
       .setCharacteristic(Characteristic.TargetHeatingCoolingState)
-      .on('get', this.getCurrentHeatingCoolingState.bind(this))
+      .on('get', this._getCurrentHeatingCoolingState.bind(this))
 
     this.thermostatService
       .setCharacteristic(Characteristic.CurrentTemperature)
-      .on('get', this.getCurrentTemperature.bind(this))
+      .on('get', this._getCurrentTemperature.bind(this))
 
     this.thermostatService
       .setCharacteristic(Characteristic.TargetTemperature)
-      .on('get', this.getTargetTemperature.bind(this))
-      .on('set', this.setTargetTemperature.bind(this))
+      .on('get', this._getTargetTemperature.bind(this))
+      .on('set', this._setTargetTemperature.bind(this))
 
     this.thermostatService.setCharacteristic(
       Characteristic.TemperatureDisplayUnits,
       Characteristic.TemperatureDisplayUnits.CELSIUS
     )
+
     // Optional Characteristics
     // .setCharacteristic(Characteristic.CurrentRelativeHumidity)
     // .setCharacteristic(Characteristic.TargetRelativeHumidity)
@@ -79,15 +67,18 @@ class NatureRemoThermostat {
     // .setCharacteristic(Characteristic.HeatingThresholdTemperature)
     // .setCharacteristic(Characteristic.Name)
 
+    this.informationService = new Service.AccessoryInformation()
+    this.informationService
+      .setCharacteristic(Characteristic.Manufacturer, 'Nature')
+      .setCharacteristic(Characteristic.Model, 'Remo')
+      .setCharacteristic(Characteristic.SerialNumber, '031-45-154')
+  }
+
+  getServices() {
     return [this.informationService, this.thermostatService]
   }
 
-  identify(next) {
-    this.log('Identify requested!')
-    next(null)
-  }
-
-  async getCurrentHeatingCoolingState(next) {
+  async _getCurrentHeatingCoolingState(next) {
     this.log('getCurrentHeatingCoolingState')
     const thermostat = await this.api.getThermostat()
     const { mode, button } = thermostat.settings
@@ -108,19 +99,19 @@ class NatureRemoThermostat {
     }
   }
 
-  async setCurrentHeatingCoolingState(state, next) {
+  async _setCurrentHeatingCoolingState(state, next) {
     this.log('setCurrentHeatingCoolingState', state)
     console.log('setCurrentHeatingCoolingState')
     return next()
   }
 
-  async getCurrentTemperature(next) {
+  async _getCurrentTemperature(next) {
     this.log('getCurrentTemperature')
     const sensorValue = await this.api.getSensorValue()
     return next(null, sensorValue.temperature)
   }
 
-  async getTargetTemperature(next) {
+  async _getTargetTemperature(next) {
     console.log('getTargetTemperature')
     this.log('getTargetTemperature')
     const thermostant = await this.api.getThermostat()
@@ -128,7 +119,7 @@ class NatureRemoThermostat {
     return next(null, thermostat.settings.temp)
   }
 
-  async setTargetTemperature(state, next) {
+  async _setTargetTemperature(state, next) {
     console.log('setTargetTemperature', state)
     this.log('setTargetTemperature', state)
     const thermostat = await this.api.getThermostat()
