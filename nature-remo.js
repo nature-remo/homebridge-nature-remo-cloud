@@ -1,7 +1,7 @@
 const axios = require('axios')
 const querystring = require('querystring')
 
-class NatureRemoAPI {
+class NatureRemo {
   constructor(token) {
     this.token = token
     this.instance = axios.create({
@@ -34,6 +34,7 @@ class NatureRemoAPI {
   }
 
   async getThermostat() {
+    console.log('getThermostat')
     const appliances = await this.getAppliances()
     for (const appliance of appliances) {
       if (appliance.type === 'AC') {
@@ -59,4 +60,4 @@ class NatureRemoAPI {
   }
 }
 
-module.exports = NatureRemoAPI
+module.exports = NatureRemo

@@ -4,7 +4,7 @@
 // Thermostat Service
 // https://github.com/KhaosT/HAP-NodeJS/blob/9eaea6df40811ccc71664a1ab0c13736e759dac7/lib/gen/HomeKitTypes.js#L3443-L3459
 
-const NatureRemoAPI = require('./nature-remo-api')
+const NatureRemoAPI = require('./nature-remo')
 
 let Accessory, Service, Characteristic, UUIDGen
 

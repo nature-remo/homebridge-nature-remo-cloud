@@ -2,7 +2,7 @@
   "name": "homebridge-nature-remo-cloud",
   "version": "1.0.0",
   "description": "",
-  "main": "thermostat.js",
+  "main": "index.js",
   "scripts": {
     "start": "DEBUG=* homebridge -D -U ./homebridge-dir -P .",
     "test": "mocha"

@@ -3,7 +3,10 @@
 // http://blog.theodo.fr/2017/08/make-siri-perfect-home-companion-devices-not-supported-apple-homekit/
 // http://swagger.nature.global/
 
-const NatureRemoAPI = require('./nature-remo-api')
+const NatureRemo = require('./nature-remo')
+
+const PLUGIN_NAME = 'homebridge-nature-remo-cloud'
+const ACCESSORY_NAME = 'NatureRemoThermostat'
 
 let Service = null
 let Characteristic = null
@@ -16,23 +19,18 @@ module.exports = homebridge => {
   Service = homebridge.hap.Service
   Characteristic = homebridge.hap.Characteristic
 
-  homebridge.registerAccessory(
-    'homebridge-nature-remo-cloud',
-    'NatureRemoThermostat',
-    NatureRemoThermostat,
-    true
-  )
+  homebridge.registerAccessory(PLUGIN_NAME, ACCESSORY_NAME, Thermostat, true)
 }
 
 // Nature Remo platform
-class NatureRemoThermostat {
+class Thermostat {
   // config may be null
   constructor(log, config) {
     this.log = log
     this.config = config
 
     this.accessToken = config.accessToken
-    this.api = new NatureRemoAPI(this.accessToken)
+    this.api = new NatureRemo(this.accessToken)
 
     // Thermostat Service
     // https://github.com/KhaosT/HAP-NodeJS/blob/9eaea6df40811ccc71664a1ab0c13736e759dac7/lib/gen/HomeKitTypes.js#L3443-L3459
