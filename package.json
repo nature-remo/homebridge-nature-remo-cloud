@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG=* homebridge -D -U ./homebridge-dir -P .",
+    "start": "DEBUG=* homebridge -D -U ./tmp -P .",
     "test": "mocha"
   },
   "engines": {
@@ -17,7 +17,8 @@
   "author": "Yasuaki Uechi <y@uechi.io> (https://uechi.io/)",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "nature-remo": "^0.1.0"
   },
   "devDependencies": {
     "homebridge": "^0.4.44",
