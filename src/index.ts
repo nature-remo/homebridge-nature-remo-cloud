@@ -3,7 +3,7 @@
 // http://blog.theodo.fr/2017/08/make-siri-perfect-home-companion-devices-not-supported-apple-homekit/
 // http://swagger.nature.global/
 
-const NatureRemo = require('./nature-remo')
+import NatureRemo from 'nature-remo'
 
 const PLUGIN_NAME = 'homebridge-nature-remo-cloud'
 const ACCESSORY_NAME = 'NatureRemoThermostat'
@@ -12,7 +12,7 @@ let Service = null
 let Characteristic = null
 
 // Register Nature Remo service to homebridge
-module.exports = homebridge => {
+export default homebridge => {
   console.log('homebridge API version: ' + homebridge.version)
 
   // Service and Characteristic are from hap-nodejs
@@ -24,8 +24,13 @@ module.exports = homebridge => {
 
 // Nature Remo platform
 class Thermostat {
+  log: () => void
+  config: {}
+  accessToken: string
+  api: NatureRemo.NatureRemo
+
   // config may be null
-  constructor(log, config) {
+  constructor(log: () => void, config: {}) {
     this.log = log
     this.config = config
 
@@ -78,7 +83,7 @@ class Thermostat {
 
   async _getCurrentHeatingCoolingState(next) {
     this.log('getCurrentHeatingCoolingState')
-    const thermostat = await this.api.getThermostat()
+    const thermostat = await this.api.getAircon()
     const { mode, button } = thermostat.settings
 
     // thermostat state: '' = on, 'power-off' = off
@@ -112,7 +117,7 @@ class Thermostat {
   async _getTargetTemperature(next) {
     console.log('getTargetTemperature')
     this.log('getTargetTemperature')
-    const thermostant = await this.api.getThermostat()
+    const thermostant = await this.api.getAircon()
     this.log(thermostat)
     return next(null, thermostat.settings.temp)
   }
@@ -120,8 +125,8 @@ class Thermostat {
   async _setTargetTemperature(state, next) {
     console.log('setTargetTemperature', state)
     this.log('setTargetTemperature', state)
-    const thermostat = await this.api.getThermostat()
-    await this.api.updateThermostatSettings(thermostat.id, {
+    const thermostat = await this.api.getAircon()
+    await this.api.updateAirconSettings(thermostat.id, {
       temperature: state,
     })
     return next()
